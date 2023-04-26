@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DiscController : MonoBehaviour
 {
-    Animation _anim;
+    
     [SerializeField, Tooltip("自分が今白かどうか Trueの時白")] bool _nowWhite;
 
+    public bool NowWhite => _nowWhite; 
     private void Awake()
     {
     　　//生成されたら必ずマスの上に位置を変えるようにした
@@ -16,7 +18,7 @@ public class DiscController : MonoBehaviour
     }
     void Start()
     {
-        _anim = GetComponent<Animation>();
+        
     }
 
     void Update()
