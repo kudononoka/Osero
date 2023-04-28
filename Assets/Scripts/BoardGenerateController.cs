@@ -5,13 +5,18 @@ using UnityEngine;
 public class BoardGenerateController : MonoBehaviour
 {
     [SerializeField, Tooltip("1マス分のBoardPrefab")] GameObject _OneCellBoardPrefab;
-    [SerializeField, Tooltip("最初のDisc設置のためのPrefab")] GameObject[] _discPrefab;
+    [SerializeField, Tooltip("最初のDisc設置のためのPrefab")] GameObject _discPrefab;
     float _OneCellBoardHeight = 1;
     float _instatePosX;
     float _instatePosZ;
-    void Start()
+
+    private void Awake()
     {
         BoardGenerate();
+    }
+    void Start()
+    {
+        
     }
     void BoardGenerate()
     {
@@ -44,13 +49,16 @@ public class BoardGenerateController : MonoBehaviour
 
     void StartDiscON(int line, char row, Vector3 pos)
     {
-        if((line == 4  && row == 'd') || (line == 5 && row == 'e'))
+        GameObject disc;
+        if ((line == 4  && row == 'd') || (line == 5 && row == 'e'))
         {
-            Instantiate(_discPrefab[1], pos, Quaternion.identity);
+           disc =  Instantiate(_discPrefab, pos, Quaternion.identity);
+           disc.GetComponent<DiscController>().NowBlack = false;
         }
         else if ((line == 4 && row == 'e') || (line == 5 && row == 'd'))
         {
-            Instantiate(_discPrefab[0], pos, Quaternion.identity);
+            disc = Instantiate(_discPrefab, pos, Quaternion.identity);
+            disc.GetComponent<DiscController>().NowBlack = true;
         }
     }
 }

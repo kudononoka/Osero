@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     /// <summary>0を黒１を白スタートとする</summary>
-    [SerializeField, Header("石Prefab")] GameObject[] _DiscPrefab;
+    [SerializeField, Header("石Prefab")] GameObject _DiscPrefab;
     [SerializeField, Header("マスのレイヤー")] LayerMask _layerMask;
     [SerializeField, Header("Rayの長さ")] float _rayLength;
     DiscOnTheBoardData _boarddata;
@@ -23,13 +23,11 @@ public class Player : MonoBehaviour
         //左クリック
         if(Input.GetMouseButtonDown(0))
         {
-            //0を黒１を白スタートとする
-            int discPrefabIndex = ((_gamemanager.NowBlackTurn) ? 0 : 1);
-            PutDice(discPrefabIndex);
+            PutDice(_gamemanager.NowBlackTurn);
         }
     }
 
-    void PutDice(int discNumber)
+    void PutDice(bool discColor)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -40,9 +38,9 @@ public class Player : MonoBehaviour
             //マスのナンバーを参照
             string cellNumber = cell.GetComponent<CellController>().MyCellNum;
             //マスの所に石を生成
-            GameObject disc = Instantiate(_DiscPrefab[discNumber], cell.transform.position, Quaternion.identity);
-            bool diceStartColor = disc.GetComponent<DiscController>().NowWhite;
-            _boarddata.DiscDataIn(cellNumber, disc);
+            GameObject disc = Instantiate(_DiscPrefab, cell.transform.position, Quaternion.identity);
+            disc.GetComponent<DiscController>().NowBlack = discColor;
+            _boarddata.DiscDataIn(cellNumber, discColor);
             _gamemanager.NowBlackTurn = !_gamemanager.NowBlackTurn;
         }
     }
