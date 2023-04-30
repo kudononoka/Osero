@@ -7,7 +7,7 @@ public class DiscController : MonoBehaviour
 {
     
     [SerializeField, Tooltip("é©ï™Ç™ç°îíÇ©Ç«Ç§Ç© TrueÇÃéûçï")] bool _nowBlack;
-
+ 
     public bool NowBlack { get { return _nowBlack; } set { _nowBlack = value; } } 
     private void Awake()
     {
@@ -19,7 +19,7 @@ public class DiscController : MonoBehaviour
     }
     void Start()
     {
-        ChangeColor();
+       
     }
 
     void Update()
@@ -27,15 +27,19 @@ public class DiscController : MonoBehaviour
         
     }
 
-    void ChangeColor()
+    public void ChangeColor(bool nowBlack)
     {
-        if(_nowBlack)
+        if(nowBlack)
         {
             transform.rotation = Quaternion.Euler(0, 0, 0);
+            NowBlack = true;
         }
         else
         {
             transform.rotation = Quaternion.Euler(180, 0, 0);
+            NowBlack = false;
         }
     }
+
+    
 }

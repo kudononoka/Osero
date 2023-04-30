@@ -53,12 +53,12 @@ public class BoardGenerateController : MonoBehaviour
         if ((line == 4  && row == 'd') || (line == 5 && row == 'e'))
         {
            disc =  Instantiate(_discPrefab, pos, Quaternion.identity);
-           disc.GetComponent<DiscController>().NowBlack = false;
+           disc.GetComponent<DiscController>().ChangeColor(false);
         }
         else if ((line == 4 && row == 'e') || (line == 5 && row == 'd'))
         {
             disc = Instantiate(_discPrefab, pos, Quaternion.identity);
-            disc.GetComponent<DiscController>().NowBlack = true;
+            disc.GetComponent<DiscController>().ChangeColor(true);
         }
     }
 }

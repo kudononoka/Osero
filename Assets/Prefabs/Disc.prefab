@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1632341819597067186}
   - component: {fileID: 7809159241282675663}
   - component: {fileID: 3653636852892863466}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WhiteObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,9 +95,9 @@ GameObject:
   - component: {fileID: 6828143532702852853}
   - component: {fileID: 6315017147957960032}
   - component: {fileID: 3696435947376601751}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Disc
-  m_TagString: Untagged
+  m_TagString: Disc
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94e5a1b83e027984b9c8805b610c14ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _nowWhite: 0
+  _nowBlack: 0
 --- !u!65 &6315017147957960032
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -172,7 +172,7 @@ GameObject:
   - component: {fileID: 7945302366574321796}
   - component: {fileID: 733225987224014455}
   - component: {fileID: 8027319705746616196}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: 'BlackObject '
   m_TagString: Untagged
   m_Icon: {fileID: 0}

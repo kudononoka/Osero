@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
             string cellNumber = cell.GetComponent<CellController>().MyCellNum;
             //É}ÉXÇÃèäÇ…êŒÇê∂ê¨
             GameObject disc = Instantiate(_DiscPrefab, cell.transform.position, Quaternion.identity);
-            disc.GetComponent<DiscController>().NowBlack = discColor;
+            disc.GetComponent<DiscController>().ChangeColor(discColor);
             _boarddata.DiscDataIn(cellNumber, discColor);
             _gamemanager.NowBlackTurn = !_gamemanager.NowBlackTurn;
         }

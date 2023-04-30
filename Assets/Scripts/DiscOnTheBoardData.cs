@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -26,10 +27,10 @@ public class DiscOnTheBoardData : MonoBehaviour
             }
         }
         //ç≈èâÇÃSetUp
+        _data[4, 4] = -1;
+        _data[4, 5] = 1;
+        _data[5, 4] = 1;
         _data[5, 5] = -1;
-        _data[5, 6] = 1;
-        _data[6, 5] = 1;
-        _data[6, 6] = -1;
         _gameManager = FindObjectOfType<GameManager>();
         
     }
@@ -53,39 +54,31 @@ public class DiscOnTheBoardData : MonoBehaviour
 
     public void DiscDataIn(string cellNum, bool discColor)
     {
-        int line = int.Parse(cellNum[1].ToString()) - 1;
-        int row = ((int)cellNum[0] - 97);
-
+        int line = int.Parse(cellNum[1].ToString());
+        int row = ((int)cellNum[0] - 96);
         _data[line,row] = discColor ? 1 : -1;
+        Debug.Log($"{row}{line}");
+        DiscReverse(line, row);
         
-        Debug.Log($"{ line} { row} : {_data[line, row]}");
     }
     
-    void DisePutCheak(int i, int j)
+    int DisePutCheak(int i, int j, int dirI, int dirR)
     {
-        
-        for(int dirI = -1; dirI < 2; dirI++)
-        {      
-            for(int dirR = -1; dirR < 2; dirR++)
-            {
-                Debug.Log(_nowTurnColor * -1);
-                int count = 1;
-                while (_data[i + dirI * count, j + dirR * count] == (_nowTurnColor * -1) )
-                {
-                    count++;
-                    Debug.Log("Ç†ÇÈ");
-                }
-
-                if(_data[i + dirI * count , j + dirR * count] == _nowTurnColor && count >= 2)
-                {
-                    string cellNum = $"{(char)(j - 1 + 96)}{i - 1}";
-                    Debug.Log($"{(char)(j - 1 + 96)}{i - 1}");
-                    _discOn.Add(GameObject.Find(cellNum));
-                }
-            }
+        int count = 1;
+        while (_data[i + dirI * count, j + dirR * count] == (_nowTurnColor * -1) )
+        {
+            count++;
         }
 
-        
+        if(_data[i + dirI * count , j + dirR * count] == _nowTurnColor && count >= 2)
+        {
+            Debug.Log(count);
+            return count;
+        }
+        else
+        {
+            return 0;
+        }
         
     }
 
@@ -98,14 +91,52 @@ public class DiscOnTheBoardData : MonoBehaviour
             {
                 if(_data[i, j] == 0)
                 {
-                    
-                    DisePutCheak(i, j);
+                    AAA(i,j);
                 }
             }
         }
         foreach(GameObject cell in _discOn)
         {
             cell.GetComponent<CellController>().Active();
+        }
+    }
+
+    void AAA(int i, int j)
+    {
+        for (int dirI = -1; dirI < 2; dirI++)
+        {
+            for (int dirR = -1; dirR < 2; dirR++)
+            {
+                if (DisePutCheak(i, j, dirI, dirR) != 0)
+                {
+                    _discOn.Add(GameObject.Find($"{(char)(j + 96)}{i}"));
+                    return;
+                }
+            }
+        }
+    }
+
+    void DiscReverse(int i, int j)
+    {
+        List<GameObject> cell = new List<GameObject>();
+        for (int dirI = -1; dirI < 2; dirI++)
+        {
+            for(int dirJ = -1; dirJ < 2;dirJ++)
+            {
+                int count = DisePutCheak(i, j, dirI, dirJ);
+                for(int k = 1; k < count; k++)
+                {
+                    _data[i + dirI * k, j + dirJ * k] = _nowTurnColor;
+                    string cellNum = $"{(char)((j + dirJ * k) + 96)}{i + dirI * k}";
+                    cell.Add(GameObject.Find(cellNum));
+                }
+            }
+        }
+        foreach(var c in cell)
+        {
+            Debug.Log("aa");
+            Debug.Log(c.name);
+            c.GetComponent<CellController>().AboveDisc(_gameManager.NowBlackTurn);
         }
     }
 

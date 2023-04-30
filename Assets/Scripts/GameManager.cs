@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _nowBlackTurn = true;
+        Debug.Log(NowBlackTurn);
     }
 
     // Update is called once per frame
