@@ -1,13 +1,14 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    /// <summary>0‚ğ•‚P‚ğ”’ƒXƒ^[ƒg‚Æ‚·‚é</summary>
-    [SerializeField, Header("ÎPrefab")] GameObject _DiscPrefab;
-    [SerializeField, Header("ƒ}ƒX‚ÌƒŒƒCƒ„[")] LayerMask _layerMask;
-    [SerializeField, Header("Ray‚Ì’·‚³")] float _rayLength;
+    /// <summary>0ã‚’é»’ï¼‘ã‚’ç™½ã‚¹ã‚¿ãƒ¼ãƒˆã¨ã™ã‚‹</summary>
+    [SerializeField, Header("çŸ³Prefab")] GameObject _DiscPrefab;
+    /// <summary>ç½®ãã“ã¨ãŒã§ãã‚‹ãƒã‚¹ã®layer</summary>
+    [SerializeField, Header("ãƒã‚¹ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼")] LayerMask _layerMask;
+    [SerializeField, Header("Rayã®é•·ã•")] float _rayLength;
     DiscOnTheBoardData _boarddata;
     GameManager _gamemanager;
     // Start is called before the first frame update
@@ -20,7 +21,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //¶ƒNƒŠƒbƒN
+        //å·¦ã‚¯ãƒªãƒƒã‚¯
         if(Input.GetMouseButtonDown(0))
         {
             PutDice(_gamemanager.NowBlackTurn);
@@ -33,14 +34,17 @@ public class Player : MonoBehaviour
         RaycastHit hit;
         if(Physics.Raycast(ray, out hit, _rayLength,_layerMask))
         {
-            //“–‚½‚Á‚½ƒ}ƒX‚ÌƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚ğæ“¾
+            //å½“ãŸã£ãŸãƒã‚¹ã®ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—
             GameObject cell = hit.transform.gameObject;
-            //ƒ}ƒX‚Ìƒiƒ“ƒo[‚ğQÆ
-            string cellNumber = cell.GetComponent<CellController>().MyCellNum;
-            //ƒ}ƒX‚ÌŠ‚ÉÎ‚ğ¶¬
+            //ãƒã‚¹ã®ãƒŠãƒ³ãƒãƒ¼ã‚’å‚ç…§
+            string cellNumber = cell.GetComponent<SquareController>().MyCellNum;
+            //ãƒã‚¹ã®æ‰€ã«çŸ³ã‚’ç”Ÿæˆ
             GameObject disc = Instantiate(_DiscPrefab, cell.transform.position, Quaternion.identity);
+            //ç”Ÿæˆã—ãŸçŸ³ã®è¡¨é¢ã‚’èª¿æ•´
             disc.GetComponent<DiscController>().ChangeColor(discColor);
-            _boarddata.DiscDataIn(cellNumber, discColor);
+            //çŸ³ã‚’ç½®ã„ãŸå ´æ‰€ã‚’ãƒœãƒ¼ãƒ‰ä¸Šã®ãƒ‡ãƒ¼ã‚¿ç®¡ç†ã—ã¦ã„ã‚‹ã‚·ã‚¹ãƒ†ãƒ ã‚¹ã‚¯ãƒªãƒ—ãƒˆã«ä¼ãˆã‚‹
+            _boarddata.DiscDataIn(cellNumber);
+            //ç›¸æ‰‹ã®ã‚¿ãƒ¼ãƒ³
             _gamemanager.ChangeTrun();
         }
     }

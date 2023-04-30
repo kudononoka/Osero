@@ -1,43 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class DiscController : MonoBehaviour
 {
-    
-    [SerializeField, Tooltip("©•ª‚ª¡”’‚©‚Ç‚¤‚© True‚Ì•")] bool _nowBlack;
- 
-    public bool NowBlack { get { return _nowBlack; } set { _nowBlack = value; } } 
     private void Awake()
     {
-    @@//¶¬‚³‚ê‚½‚ç•K‚¸ƒ}ƒX‚Ìã‚ÉˆÊ’u‚ğ•Ï‚¦‚é‚æ‚¤‚É‚µ‚½
+    ã€€ã€€//ç”Ÿæˆã•ã‚ŒãŸã‚‰å¿…ãšãƒã‚¹ã®ä¸Šã«ä½ç½®ã‚’å¤‰ãˆã‚‹ã‚ˆã†ã«ã—ãŸ
         Vector3 pos = transform.position;
         pos.y = 0.04f;
         transform.position = pos;
-        
     }
-    void Start()
-    {
-       
-    }
-
-    void Update()
-    {
-        
-    }
-
+    /// <summary>ã‚’çŸ³å›è»¢ã•ã›ã‚‹ã“ã¨è¡¨é¢ã§é»’ã«ã—ãŸã‚Šç™½ã«ã—ãŸã‚Šã™ã‚‹é–¢æ•°ã§ã™</summary>
+    /// <param name="nowBlack">Trueã®æ™‚è¡¨é¢ãŒé»’ã«ãªã‚Šã¾ã™</param>
     public void ChangeColor(bool nowBlack)
     {
         if(nowBlack)
         {
+            //é»’
             transform.rotation = Quaternion.Euler(0, 0, 0);
-            NowBlack = true;
         }
         else
         {
+            //ç™½
             transform.rotation = Quaternion.Euler(180, 0, 0);
-            NowBlack = false;
         }
     }
 
