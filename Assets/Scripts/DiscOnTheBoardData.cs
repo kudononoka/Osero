@@ -16,6 +16,7 @@ public class DiscOnTheBoardData : MonoBehaviour
     int _nowTurnColor;
     int _reverseColor;
     bool _is = true;
+    int _noneCellCount = 60;
     public bool isReverse { get { return _is; }set { _is = value; } }
     void Start()
     {
@@ -58,13 +59,13 @@ public class DiscOnTheBoardData : MonoBehaviour
         int line = int.Parse(cellNum[1].ToString());
         int row = ((int)cellNum[0] - 96);
         _data[line,row] = discColor ? 1 : -1;
-        Debug.Log($"{row}{line}");
         DiscReverse(line, row);
         foreach (CellController cell in _discOn)
         {
             cell.Active(false);
         }
         _discOn.Clear();
+        _noneCellCount--;
     }
     
     int DisePutCheak(int i, int j, int dirI, int dirR)
@@ -77,7 +78,6 @@ public class DiscOnTheBoardData : MonoBehaviour
 
         if(_data[i + dirI * count , j + dirR * count] == _nowTurnColor && count >= 2)
         {
-            Debug.Log(count);
             return count;
         }
         else
@@ -90,19 +90,34 @@ public class DiscOnTheBoardData : MonoBehaviour
     /// <summary>Î‚ğ’u‚¯‚éêŠ‚ª‚ ‚é‚©‚Ç‚¤‚©</summary>
     void NoneCell()
     {
-        for (int i = 1; i < 9; i++)
+        Debug.Log(_noneCellCount);
+        if (_noneCellCount == 0)
         {
-            for (int j = 1; j < 9; j++)
+            Debug.Log("I—¹");
+        }
+        else
+        {
+            for (int i = 1; i < 9; i++)
             {
-                if(_data[i, j] == 0)
+                for (int j = 1; j < 9; j++)
                 {
-                    AAA(i,j);
+                    if (_data[i, j] == 0)
+                    {
+                        AAA(i, j);
+                    }
                 }
             }
-        }
-        foreach(CellController cell in _discOn)
-        {
-            cell.Active(true);
+            if (_discOn.Count != 0)
+            {
+                foreach (CellController cell in _discOn)
+                {
+                    cell.Active(true);
+                }
+            }
+            else
+            {
+                _gameManager.ChangeTrun();
+            }
         }
     }
 
@@ -139,7 +154,6 @@ public class DiscOnTheBoardData : MonoBehaviour
         }
         foreach(var c in cell)
         {
-            Debug.Log("aa");
             c.GetComponent<CellController>().AboveDisc(_gameManager.NowBlackTurn);
         }
     }
