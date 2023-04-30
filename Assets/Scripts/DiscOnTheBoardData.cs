@@ -1,11 +1,4 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading;
-using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class DiscOnTheBoardData : MonoBehaviour
@@ -63,6 +56,7 @@ public class DiscOnTheBoardData : MonoBehaviour
         foreach (CellController cell in _discOn)
         {
             cell.Active(false);
+            cell.layerChange(2);
         }
         _discOn.Clear();
         _noneCellCount--;
@@ -111,6 +105,7 @@ public class DiscOnTheBoardData : MonoBehaviour
             {
                 foreach (CellController cell in _discOn)
                 {
+                    cell.layerChange(6);
                     cell.Active(true);
                 }
             }
@@ -138,7 +133,7 @@ public class DiscOnTheBoardData : MonoBehaviour
 
     void DiscReverse(int i, int j)
     {
-        List<GameObject> cell = new List<GameObject>();
+        List<CellController> cell = new List<CellController>();
         for (int dirI = -1; dirI < 2; dirI++)
         {
             for(int dirJ = -1; dirJ < 2;dirJ++)
@@ -148,7 +143,7 @@ public class DiscOnTheBoardData : MonoBehaviour
                 {
                     _data[i + dirI * k, j + dirJ * k] = _nowTurnColor;
                     string cellNum = $"{(char)((j + dirJ * k) + 96)}{i + dirI * k}";
-                    cell.Add(GameObject.Find(cellNum));
+                    cell.Add(GameObject.Find(cellNum).GetComponent<CellController>());
                 }
             }
         }

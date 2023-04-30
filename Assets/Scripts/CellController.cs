@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class CellController : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class CellController : MonoBehaviour
 
     private void Start()
     {
+        layerChange(2);
         transform.GetChild(0).gameObject.SetActive(false);
         gameObject.name = _myCellNum;
     }
@@ -22,7 +24,7 @@ public class CellController : MonoBehaviour
         if (other.gameObject.CompareTag("Disc"))
         {
             _upDisc = other.gameObject.GetComponent<DiscController>();
-            gameObject.layer = 2;
+            layerChange(2);
             transform.GetChild(0).gameObject.SetActive(false);
         }
     } 
@@ -35,5 +37,10 @@ public class CellController : MonoBehaviour
     public void AboveDisc(bool blackColor)
     {
         _upDisc.ChangeColor(blackColor);
+    }
+
+    public void layerChange(int layer)
+    {
+        gameObject.layer = layer;
     }
 }
