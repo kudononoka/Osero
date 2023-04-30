@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     bool _nowBlackTurn = true;
     /// <summary>True‚Ì•‚Ìè‚Å‚·</summary>
     public bool NowBlackTurn {get { return _nowBlackTurn;} set { _nowBlackTurn = value; } }
+    [SerializeField] DiscOnTheBoardData _boardData;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,5 +18,11 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void ChangeTrun()
+    {
+        _nowBlackTurn = !_nowBlackTurn;
+        _boardData.isReverse = true;
     }
 }

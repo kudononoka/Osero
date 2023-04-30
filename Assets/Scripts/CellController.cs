@@ -27,9 +27,9 @@ public class CellController : MonoBehaviour
         }
     } 
 
-    public void Active()
+    public void Active(bool active)
     {
-        transform.GetChild(0).gameObject.SetActive(true);
+        transform.GetChild(0).gameObject.SetActive(active);
     }
 
     public void AboveDisc(bool blackColor)

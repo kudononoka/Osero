@@ -11,11 +11,12 @@ using UnityEngine;
 public class DiscOnTheBoardData : MonoBehaviour
 {
     int[,] _data = new int[10, 10];
-    List<GameObject> _discOn = new List<GameObject>();  
+    List<CellController> _discOn = new List<CellController>();  
     GameManager _gameManager;
     int _nowTurnColor;
     int _reverseColor;
     bool _is = true;
+    public bool isReverse { get { return _is; }set { _is = value; } }
     void Start()
     {
         //0を空、1を黒石、-1を白石としてデータに保存する
@@ -59,7 +60,11 @@ public class DiscOnTheBoardData : MonoBehaviour
         _data[line,row] = discColor ? 1 : -1;
         Debug.Log($"{row}{line}");
         DiscReverse(line, row);
-        
+        foreach (CellController cell in _discOn)
+        {
+            cell.Active(false);
+        }
+        _discOn.Clear();
     }
     
     int DisePutCheak(int i, int j, int dirI, int dirR)
@@ -95,9 +100,9 @@ public class DiscOnTheBoardData : MonoBehaviour
                 }
             }
         }
-        foreach(GameObject cell in _discOn)
+        foreach(CellController cell in _discOn)
         {
-            cell.GetComponent<CellController>().Active();
+            cell.Active(true);
         }
     }
 
@@ -109,7 +114,7 @@ public class DiscOnTheBoardData : MonoBehaviour
             {
                 if (DisePutCheak(i, j, dirI, dirR) != 0)
                 {
-                    _discOn.Add(GameObject.Find($"{(char)(j + 96)}{i}"));
+                    _discOn.Add(GameObject.Find($"{(char)(j + 96)}{i}").GetComponent<CellController>());
                     return;
                 }
             }
@@ -135,7 +140,6 @@ public class DiscOnTheBoardData : MonoBehaviour
         foreach(var c in cell)
         {
             Debug.Log("aa");
-            Debug.Log(c.name);
             c.GetComponent<CellController>().AboveDisc(_gameManager.NowBlackTurn);
         }
     }

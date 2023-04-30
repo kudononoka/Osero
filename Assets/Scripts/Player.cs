@@ -41,7 +41,7 @@ public class Player : MonoBehaviour
             GameObject disc = Instantiate(_DiscPrefab, cell.transform.position, Quaternion.identity);
             disc.GetComponent<DiscController>().ChangeColor(discColor);
             _boarddata.DiscDataIn(cellNumber, discColor);
-            _gamemanager.NowBlackTurn = !_gamemanager.NowBlackTurn;
+            _gamemanager.ChangeTrun();
         }
     }
 }
