@@ -1,9 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Data.SqlTypes;
 using UnityEngine;
 
 public class DiscOnTheBoardData : MonoBehaviour
 {
     GameManager _gameManager;
+    /// <summary>棋譜用のためのList</summary>
+    List<string> _kihu = new List<string>();
+    List<string> dir = new List<string>();
+    int _kihucount = 0;
     /// <summary>ボード上にある石場所を管理する用の配列　
     /// Keyはマスのナンバー　Valueを現在表面になっている色をさす</summary>
     int[,] _boardData = new int[10, 10];
@@ -65,6 +70,8 @@ public class DiscOnTheBoardData : MonoBehaviour
         int row = ((int)squareNum[0] - 96);
         //置いた場所をキーとしてバリューに現在表面になっている色を代入
         _boardData[line,row] = _nowTurnDiscColor;
+        //棋譜Listに追加
+        _kihu.Add(squareNum);
         //挟んだ石の反転
         DiscReverse(line, row);
         //置くことが可能なマスのリセット
@@ -176,6 +183,7 @@ public class DiscOnTheBoardData : MonoBehaviour
     {
         //反転予定の石の真下のマスのSquareControllerコンポーネントを追加するためのリスト
         List<SquareController> square = new List<SquareController>();
+       
         //全方位調べる
         for (int dirI = -1; dirI < 2; dirI++)
         {
@@ -183,10 +191,12 @@ public class DiscOnTheBoardData : MonoBehaviour
             {
                 //その方向に対して何個相手の石を反転させるか調べる
                 int count = DisePutCheak(i, j, dirI, dirJ);
-                for(int k = 1; k < count; k++)
+                string cellNum = "";
+                for (int k = 1; k < count; k++)
                 {
                     _boardData[i + dirI * k, j + dirJ * k] = _nowTurnDiscColor;
-                    string cellNum = $"{(char)((j + dirJ * k) + 96)}{i + dirI * k}";
+                    cellNum = $"{(char)((j + dirJ * k) + 96)}{i + dirI * k}";
+                    dir.Add($"{i}{j}{cellNum}");
                     //リストに追加
                     square.Add(GameObject.Find(cellNum).GetComponent<SquareController>());
                 }
@@ -194,9 +204,37 @@ public class DiscOnTheBoardData : MonoBehaviour
         }
         foreach(var c in square)
         {
+            Debug.Log(c);
             //反転
             c.AboveDisc(_gameManager.NowBlackTurn);
         }
+    }
+
+    public void Retrun()
+    {
+        List<string> list = new List<string>();
+        
+        _kihucount++;
+        int i = _kihu.Count - _kihucount;
+        string retrunSquare = _kihu[i];
+        int line = int.Parse(retrunSquare[1].ToString());
+        int row = ((int)retrunSquare[0] - 96);
+        _boardData[line, row] = 0;
+        GameObject dics = GameObject.Find($"{retrunSquare}").GetComponent<SquareController>().DiscOnMe;
+        Destroy( dics );
+        for(var j = 0; j < dir.Count; j++)
+        {
+            string num = dir[j];
+            Debug.Log($"{line}{row}");
+            if (num.Substring(0,2) == $"{line}{row}")
+            {
+                string cellNum = num.Substring(2,2);
+                Debug.Log(cellNum);
+                GameObject.Find($"{cellNum}").GetComponent<SquareController>().AboveDisc(_gameManager.NowBlackTurn);
+            }  
+        }
+        _gameManager.NowBlackTurn = !_gameManager.NowBlackTurn;
+
     }
 
 }

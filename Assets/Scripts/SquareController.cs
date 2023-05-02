@@ -7,7 +7,8 @@ public class SquareController : MonoBehaviour
     /// <summary>このゲームオブジェクトのマスのナンバー</summary>
     public string MyCellNum {get { return _myCellNum;}　set { _myCellNum = value; } }
     /// <summary>自分のマスの上にいる石のDiscControllerコンポーネント</summary>
-    DiscController _discOnMe;
+    GameObject _discOnMe;
+    public GameObject DiscOnMe { get { return _discOnMe; } set { _discOnMe = value; } }
 
     private void Start()
     {
@@ -26,7 +27,7 @@ public class SquareController : MonoBehaviour
         //上に石があったら
         if (other.gameObject.CompareTag("Disc"))
         {
-            _discOnMe = other.gameObject.GetComponent<DiscController>();
+            _discOnMe = other.gameObject;
             //layerをIgnoreRaycastにしこれ以上石を置けないようにした
             layerChange(2);
             PlaceDiscSquares(false);
@@ -45,7 +46,7 @@ public class SquareController : MonoBehaviour
     /// <param name="blackColor">Trueの時表面が黒になる</param>
     public void AboveDisc(bool blackColor)
     {
-        _discOnMe.ChangeColor(blackColor);
+        _discOnMe.GetComponent<DiscController>().ChangeColor(blackColor);
     }
 
     /// <summary>このゲームオブジェクトのlayerを変えるための関数</summary>
