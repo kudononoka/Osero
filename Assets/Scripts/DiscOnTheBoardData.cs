@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Data.SqlTypes;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DiscOnTheBoardData : MonoBehaviour
 {
+    [SerializeField, Header("棋譜")] Text _kihuText;
     GameManager _gameManager;
     /// <summary>棋譜用のためのList</summary>
     List<List<string>> _kihu = new List<List<string>>();
@@ -94,6 +94,8 @@ public class DiscOnTheBoardData : MonoBehaviour
         _discOn.Clear();
         //石を置けるマスを1マスなくす
         _noneCellCount--;
+
+        _kihuText.text += $"{squareNum}";
     }
     
     /// <summary>自分の石を置いたとして何個相手の石をひっくり返せるかを確認する関数</summary>
@@ -238,6 +240,7 @@ public class DiscOnTheBoardData : MonoBehaviour
             isReverse = true;
             _kihuReturnCount--;
         }
+        
     }
     public void Retrun()
     {
@@ -267,9 +270,19 @@ public class DiscOnTheBoardData : MonoBehaviour
             }
             _discOn.Clear();
             _gameManager.NowBlackTurn = !_gameManager.NowBlackTurn;
+            
             isReverse = true;
         }
-        
+        KihuText();
+    }
+
+    void KihuText()
+    {
+        _kihuText.text = "";
+        for (var i = 0; i < _kihu.Count - _kihuReturnCount; i++)
+        {
+            _kihuText.text += $"{_kihu[i][0]}";
+        }
     }
 
 
