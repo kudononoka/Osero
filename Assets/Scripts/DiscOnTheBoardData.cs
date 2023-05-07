@@ -9,7 +9,7 @@ public class DiscOnTheBoardData : MonoBehaviour
     /// <summary>棋譜用のためのList</summary>
     List<List<string>> _kihu = new List<List<string>>();
     //List<string> dir = new List<string>();
-    int _kihucount = 0;
+    int _kihuReturnCount = 0;
     /// <summary>ボード上にある石場所を管理する用の配列　
     /// Keyはマスのナンバー　Valueを現在表面になっている色をさす</summary>
     int[,] _boardData = new int[10, 10];
@@ -21,6 +21,8 @@ public class DiscOnTheBoardData : MonoBehaviour
     bool _isReverse = true;
     /// <summary>マスの上に石がない状態、０になったらゲーム終了</summary>
     int _noneCellCount = 60;
+    [SerializeField] GameObject _DiscPrefab;
+    bool _isUnRetrun = false;
     /// <summary>次のターンの準備にとりかかってもいいかどうか</summary>
     public bool isReverse { get { return _isReverse; }set { _isReverse = value; } }
     void Start()
@@ -66,12 +68,21 @@ public class DiscOnTheBoardData : MonoBehaviour
     /// <param name="squareNum">石を置いたマスのナンバー</param>
     public void DiscDataIn(string squareNum)
     {
+        if(_kihuReturnCount == 0)
+        {
+            _isUnRetrun = true;
+        }
+
+        if(_kihuReturnCount > 0 && !_isUnRetrun)
+        {
+            _kihu.RemoveRange(_kihu.Count - _kihuReturnCount, _kihuReturnCount);
+            _kihuReturnCount = 0;
+        }
         int line = int.Parse(squareNum[1].ToString());
         //列はアルファベット文字で表現しているのでaが１となるようにInt型へキャスト
         int row = ((int)squareNum[0] - 96);
         //置いた場所をキーとしてバリューに現在表面になっている色を代入
         _boardData[line,row] = _nowTurnDiscColor;
-
         //挟んだ石の反転
         DiscReverse(line, row,squareNum);
         //置くことが可能なマスのリセット
@@ -205,31 +216,60 @@ public class DiscOnTheBoardData : MonoBehaviour
         }
         foreach(var c in square)
         {
-            Debug.Log(c);
             //反転
             c.AboveDisc(_gameManager.NowBlackTurn);
         }
 
         _kihu.Add(dir);
     }
-
+    public void UnReturn()
+    {
+        Debug.Log(_kihu.Count);
+        if(_kihuReturnCount <= _kihu.Count && _kihuReturnCount > 0)
+        {
+            _isUnRetrun = true;
+            int i = _kihu.Count - _kihuReturnCount;
+            GameObject cell = GameObject.Find($"{_kihu[i][0]}");
+            GameObject disc = Instantiate(_DiscPrefab, cell.transform.position, Quaternion.identity);
+            disc.GetComponent<DiscController>().ChangeColor(_gameManager.NowBlackTurn);
+            DiscDataIn(_kihu[i][0]);
+            _gameManager.NowBlackTurn = !_gameManager.NowBlackTurn;
+            _kihu.RemoveAt(_kihu.Count - 1);
+            isReverse = true;
+            _kihuReturnCount--;
+        }
+    }
     public void Retrun()
     {
-        _kihucount++;
-        int i = _kihu.Count - _kihucount;
-        string retrunSquare = _kihu[i][0];
-        int line = int.Parse(retrunSquare[1].ToString());
-        int row = ((int)retrunSquare[0] - 96);
-        _boardData[line, row] = 0;
-        GameObject dics = GameObject.Find($"{retrunSquare}").GetComponent<SquareController>().DiscOnMe;
-        Destroy( dics );
-        for(var j = 1; j < _kihu[i].Count; j++)
+        Debug.Log(_kihu.Count);
+        if(_kihuReturnCount < _kihu.Count && _kihu.Count > 0)
         {
-            string cellNum = _kihu[i][j];
-            Debug.Log(cellNum);
-            GameObject.Find($"{cellNum}").GetComponent<SquareController>().AboveDisc(_gameManager.NowBlackTurn);
+            _kihuReturnCount++;
+            int i = _kihu.Count - _kihuReturnCount;
+            string retrunSquare = _kihu[i][0];
+            int line = int.Parse(retrunSquare[1].ToString());
+            int row = ((int)retrunSquare[0] - 96);
+            _boardData[line, row] = 0;
+            GameObject dics = GameObject.Find($"{retrunSquare}").GetComponent<SquareController>().DiscOnMe;
+            Destroy(dics);
+            for (var j = 1; j < _kihu[i].Count; j++)
+            {
+                string cellNum = _kihu[i][j];
+                int numline = int.Parse(cellNum[1].ToString());
+                int numrow = ((int)cellNum[0] - 96);
+                _boardData[numline, numrow] = _nowTurnDiscColor;
+                GameObject.Find($"{cellNum}").GetComponent<SquareController>().AboveDisc(_gameManager.NowBlackTurn);
+            }
+            foreach (SquareController cell in _discOn)
+            {
+                cell.PlaceDiscSquares(false);
+                cell.layerChange(2);
+            }
+            _discOn.Clear();
+            _gameManager.NowBlackTurn = !_gameManager.NowBlackTurn;
+            isReverse = true;
         }
-        _gameManager.NowBlackTurn = !_gameManager.NowBlackTurn;
+        
     }
 
 
