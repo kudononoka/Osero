@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         //左クリック
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(0) && _gamemanager.NextTurn)
         {
             PutDice(_gamemanager.NowBlackTurn);
         }
@@ -37,13 +37,14 @@ public class Player : MonoBehaviour
             //当たったマスのゲームオブジェクトを取得
             GameObject cell = hit.transform.gameObject;
             //マスのナンバーを参照
-            string cellNumber = cell.GetComponent<SquareController>().MyCellNum;
+            //string cellNumber = cell.GetComponent<SquareController>().MyCellNum;
+            Pos pos = cell.GetComponent<SquareController>().MyPos;
             //マスの所に石を生成
             GameObject disc = Instantiate(_DiscPrefab, cell.transform.position, Quaternion.identity);
             //生成した石の表面を調整
             disc.GetComponent<DiscController>().ChangeColor(discColor);
             //石を置いた場所をボード上のデータ管理しているシステムスクリプトに伝える
-            _boarddata.DiscDataIn(cellNumber);
+            _boarddata.DiscDataIn(pos);
             //相手のターン
             _gamemanager.ChangeTrun();
         }

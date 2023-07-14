@@ -1,15 +1,19 @@
 ﻿using UnityEngine;
+using static SquareController;
 
 public class SquareController : MonoBehaviour
 {
-    /// <summary>このゲームオブジェクトのマスのナンバー</summary>
-    string _myCellNum = "";
-    /// <summary>このゲームオブジェクトのマスのナンバー</summary>
-    public string MyCellNum {get { return _myCellNum;}　set { _myCellNum = value; } }
     /// <summary>自分のマスの上にいる石のDiscControllerコンポーネント</summary>
     GameObject _discOnMe;
     public GameObject DiscOnMe { get { return _discOnMe; } set { _discOnMe = value; } }
+    /// <summary>自分のマスの上の石の状態</summary>
+    OndiseState _ondiceState = OndiseState.None;
+    /// <summary>自分のマスの上の石の状態</summary>
+    public OndiseState MyOnDiceState { get { return _ondiceState; } set { _ondiceState = value; } }
 
+    Pos _pos = new Pos();
+
+    public Pos MyPos => _pos;
     private void Start()
     {
         //layerをIgnoreRaycastにし、石を置けなくする
@@ -17,8 +21,11 @@ public class SquareController : MonoBehaviour
         
         //最初は非表示にする
         PlaceDiscSquares(false);
-        //わかりやすいようオブジェクトの名前をマスナンバーする
-        gameObject.name = _myCellNum;
+    }
+
+    public void MyPosSetUp(int row, int column)
+    {
+        _pos = new Pos(row, column, transform.position);
     }
 
     /// <summary>当たり判定で自分のマスの上に石があるかどうかを確認</summary>
@@ -46,7 +53,7 @@ public class SquareController : MonoBehaviour
     /// <param name="blackColor">Trueの時表面が黒になる</param>
     public void AboveDisc(bool blackColor)
     {
-        _discOnMe.GetComponent<DiscController>().ChangeColor(blackColor);
+        _discOnMe.GetComponent<DiscController>().ChangeColorAnim(blackColor);
     }
 
     /// <summary>このゲームオブジェクトのlayerを変えるための関数</summary>
@@ -54,5 +61,38 @@ public class SquareController : MonoBehaviour
     public void layerChange(int layer)
     {
         gameObject.layer = layer;
+    }
+
+    
+}
+
+public enum OndiseState
+{
+    /// <summary>何もない</summary>
+    None,
+    /// <summary>黒石</summary>
+    Black,
+    /// <summary>白石</summary>
+    White,
+}
+
+public struct Pos
+{
+    int row;
+    int column;
+    string name;
+    Vector3 traPos;
+    /// <summary>行列番号</summary>
+    public int Row => row;
+    /// <summary>列番号</summary>
+    public int Column => column;
+    public string Name => name;
+    public Vector3 TraPos => traPos;
+    public Pos(int row, int column, Vector3 traPos)
+    {
+        this.row = row;
+        this.column = column;
+        this.name = ((char)(row + 96)).ToString() + column.ToString();
+        this.traPos = traPos;
     }
 }

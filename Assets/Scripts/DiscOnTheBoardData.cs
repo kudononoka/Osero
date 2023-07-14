@@ -7,16 +7,14 @@ public class DiscOnTheBoardData : MonoBehaviour
     [SerializeField, Header("棋譜")] Text _kihuText;
     GameManager _gameManager;
     /// <summary>棋譜用のためのList</summary>
-    List<List<string>> _kihu = new List<List<string>>();
+    List<List<Pos>> _kihu = new List<List<Pos>>();
     //List<string> dir = new List<string>();
     int _kihuReturnCount = 0;
-    /// <summary>ボード上にある石場所を管理する用の配列　
-    /// Keyはマスのナンバー　Valueを現在表面になっている色をさす</summary>
-    int[,] _boardData = new int[10, 10];
+    SquareController[,] _boardData = new SquareController[10, 10];
     /// <summary>ターンごとに石を置くことができるマスをその都度保存する用</summary>
-    List<SquareController> _discOn = new List<SquareController>();  
+    List<SquareController> _discOn = new List<SquareController>();
     /// <summary>現在のターンの色   黒だと１、白だと-1と表現する</summary>
-    int _nowTurnDiscColor;
+    OndiseState _nowTurnDiscColor = OndiseState.None;
     /// <summary>次のターンの準備にとりかかってもいいかどうか</summary>
     bool _isReverse = true;
     /// <summary>マスの上に石がない状態、０になったらゲーム終了</summary>
@@ -40,7 +38,10 @@ public class DiscOnTheBoardData : MonoBehaviour
             _isReverse = false;
         }
     }
-
+    public void BoardDataSetUp(int row, int column, SquareController squareControlle)
+    {
+        _boardData[row, column] = squareControlle;
+    }
     /// <summary>ゲームを始める前の準備</summary>
     void StartSetUp()
     {
@@ -49,24 +50,24 @@ public class DiscOnTheBoardData : MonoBehaviour
         {
             for (int j = 0; j < _boardData.GetLength(1); j++)
             {
-                _boardData[i, j] = 0;
+                _boardData[i, j].MyOnDiceState = OndiseState.None;
             }
         }
         //最初置く石として中央となる場所に白-1黒１を設定
-        _boardData[4, 4] = -1;
-        _boardData[4, 5] = 1;
-        _boardData[5, 4] = 1;
-        _boardData[5, 5] = -1;
+        _boardData[4, 4].MyOnDiceState = OndiseState.White;
+        _boardData[4, 5].MyOnDiceState = OndiseState.Black;
+        _boardData[5, 4].MyOnDiceState = OndiseState.Black;
+        _boardData[5, 5].MyOnDiceState = OndiseState.White;
     }
 
     void TrunChange()
     {
-        _nowTurnDiscColor = _gameManager.NowBlackTurn ? 1 : -1;
+        _nowTurnDiscColor = _gameManager.NowBlackTurn ? OndiseState.Black : OndiseState.White;
     }
 
     /// <summary>石を置いた後の処理</summary>
-    /// <param name="squareNum">石を置いたマスのナンバー</param>
-    public void DiscDataIn(string squareNum)
+    /// <param name="squarePos">石を置いたマスのナンバー</param>
+    public void DiscDataIn(Pos squarePos)
     {
         if(_kihuReturnCount == 0)
         {
@@ -78,13 +79,13 @@ public class DiscOnTheBoardData : MonoBehaviour
             _kihu.RemoveRange(_kihu.Count - _kihuReturnCount, _kihuReturnCount);
             _kihuReturnCount = 0;
         }
-        int line = int.Parse(squareNum[1].ToString());
+        int row = squarePos.Row;
         //列はアルファベット文字で表現しているのでaが１となるようにInt型へキャスト
-        int row = ((int)squareNum[0] - 96);
+        int column = squarePos.Column;
         //置いた場所をキーとしてバリューに現在表面になっている色を代入
-        _boardData[line,row] = _nowTurnDiscColor;
+        _boardData[row,column].MyOnDiceState = _nowTurnDiscColor;
         //挟んだ石の反転
-        DiscReverse(line, row,squareNum);
+        DiscReverse(row, column, _boardData[row, column].MyPos);
         //置くことが可能なマスのリセット
         foreach (SquareController cell in _discOn)
         {
@@ -95,26 +96,27 @@ public class DiscOnTheBoardData : MonoBehaviour
         //石を置けるマスを1マスなくす
         _noneCellCount--;
 
-        _kihuText.text += $"{squareNum}";
+        _kihuText.text += squarePos.Name;
     }
     
     /// <summary>自分の石を置いたとして何個相手の石をひっくり返せるかを確認する関数</summary>
-    /// <param name="i">マスの行ナンバー</param>
-    /// <param name="j">マスの列ナンバー</param>
-    /// <param name="dirI">行の方向</param>
-    /// <param name="dirR">列の方向</param>
+    /// <param name="row">マスの行ナンバー</param>
+    /// <param name="column">マスの列ナンバー</param>
+    /// <param name="dirR">行の方向</param>
+    /// <param name="dirC">列の方向</param>
     /// <returns>ひっくり返す石があった場合その個数をなかった場合０を返します</returns>
-    int DisePutCheak(int i, int j, int dirI, int dirR)
+    int DisePutCheak(int row, int column, int dirR, int dirC)
     {
         int count = 1;
+        OndiseState nowAiteState = _nowTurnDiscColor == OndiseState.Black ? OndiseState.White : OndiseState.Black;
         //相手の石だったら調べる方向の矢印を伸ばしていく
         //矢印の先が空、自分の石だったらwhileを抜ける
-        while (_boardData[i + dirI * count, j + dirR * count] == (_nowTurnDiscColor * -1) )
+        while (_boardData[row + dirR * count, column + dirC * count].MyOnDiceState == nowAiteState)
         {
             count++;
         }
         //矢印の先が自分の石かつ相手の石を１つでも挟んでいたら
-        if(_boardData[i + dirI * count , j + dirR * count] == _nowTurnDiscColor && count >= 2)
+        if(_boardData[row + dirR * count , column + dirC * count].MyOnDiceState == _nowTurnDiscColor && count >= 2)
         {
             return count;
         }
@@ -142,9 +144,9 @@ public class DiscOnTheBoardData : MonoBehaviour
                 for (int j = 1; j < 9; j++)
                 {
                     //そのマスに上に石がなかったら
-                    if (_boardData[i, j] == 0)
+                    if (_boardData[i, j].MyOnDiceState == OndiseState.None)
                     {
-                        SearchPutDiscSquare(i, j);
+                        SearchPutDiscSquare(_boardData[i, j].MyPos);
                     }
                 }
             }
@@ -171,7 +173,7 @@ public class DiscOnTheBoardData : MonoBehaviour
     /// <summary>石が置けるかどうかの処理</summary>
     /// <param name="i">マスの行ナンバー</param>
     /// <param name="j">マスの列ナンバー</param>
-    void SearchPutDiscSquare(int i, int j)
+    void SearchPutDiscSquare(Pos pos)
     {
         //自分のマスからみて全方位のマスを調べる
         for (int dirI = -1; dirI < 2; dirI++)
@@ -179,9 +181,9 @@ public class DiscOnTheBoardData : MonoBehaviour
             for (int dirR = -1; dirR < 2; dirR++)
             {
                 //戻り値が０以外だったら
-                if (DisePutCheak(i, j, dirI, dirR) != 0)
+                if (DisePutCheak(pos.Row, pos.Column, dirI, dirR) != 0)
                 {
-                    _discOn.Add(GameObject.Find($"{(char)(j + 96)}{i}").GetComponent<SquareController>());
+                    _discOn.Add(_boardData[pos.Row, pos.Column]);
                     //一方方向だけでも石を反転させることがわかればいい
                     return;
                 }
@@ -192,12 +194,12 @@ public class DiscOnTheBoardData : MonoBehaviour
     /// <summary>挟んだ石を反転させる処理</summary>
     /// <param name="i">マスの行ナンバー</param>
     /// <param name="j">マスの列ナンバー</param>
-    void DiscReverse(int i, int j, string squareNum)
+    void DiscReverse(int i, int j, Pos squareNum)
     {
-        List<string> dir = new List<string>();
+        List<Pos> dir = new List<Pos>();
         //反転予定の石の真下のマスのSquareControllerコンポーネントを追加するためのリスト
         List<SquareController> square = new List<SquareController>();
-        dir.Add($"{squareNum}");
+        dir.Add(squareNum);
         //全方位調べる
         for (int dirI = -1; dirI < 2; dirI++)
         {
@@ -205,14 +207,12 @@ public class DiscOnTheBoardData : MonoBehaviour
             {
                 //その方向に対して何個相手の石を反転させるか調べる
                 int count = DisePutCheak(i, j, dirI, dirJ);
-                string cellNum = "";
                 for (int k = 1; k < count; k++)
                 {
-                    _boardData[i + dirI * k, j + dirJ * k] = _nowTurnDiscColor;
-                    cellNum = $"{(char)((j + dirJ * k) + 96)}{i + dirI * k}";
-                    dir.Add($"{cellNum}");
+                    _boardData[i + dirI * k, j + dirJ * k].MyOnDiceState = _nowTurnDiscColor;
+                    dir.Add(_boardData[i + dirI * k, j + dirJ * k].MyPos);
                     //リストに追加
-                    square.Add(GameObject.Find(cellNum).GetComponent<SquareController>());
+                    square.Add(_boardData[i + dirI * k, j + dirJ * k]);
                 }
             }
         }
@@ -227,12 +227,11 @@ public class DiscOnTheBoardData : MonoBehaviour
     public void UnReturn()
     {
         Debug.Log(_kihu.Count);
-        if(_kihuReturnCount <= _kihu.Count && _kihuReturnCount > 0)
+        if(_kihuReturnCount <= _kihu.Count && _kihuReturnCount > 0 && _gameManager.NextTurn)
         {
             _isUnRetrun = true;
             int i = _kihu.Count - _kihuReturnCount;
-            GameObject cell = GameObject.Find($"{_kihu[i][0]}");
-            GameObject disc = Instantiate(_DiscPrefab, cell.transform.position, Quaternion.identity);
+            GameObject disc = Instantiate(_DiscPrefab, _kihu[i][0].TraPos, Quaternion.identity);
             disc.GetComponent<DiscController>().ChangeColor(_gameManager.NowBlackTurn);
             DiscDataIn(_kihu[i][0]);
             _gameManager.NowBlackTurn = !_gameManager.NowBlackTurn;
@@ -245,23 +244,20 @@ public class DiscOnTheBoardData : MonoBehaviour
     public void Retrun()
     {
         Debug.Log(_kihu.Count);
-        if(_kihuReturnCount < _kihu.Count && _kihu.Count > 0)
+        if(_kihuReturnCount < _kihu.Count && _kihu.Count > 0 && _gameManager.NextTurn)
         {
             _kihuReturnCount++;
             int i = _kihu.Count - _kihuReturnCount;
-            string retrunSquare = _kihu[i][0];
-            int line = int.Parse(retrunSquare[1].ToString());
-            int row = ((int)retrunSquare[0] - 96);
-            _boardData[line, row] = 0;
-            GameObject dics = GameObject.Find($"{retrunSquare}").GetComponent<SquareController>().DiscOnMe;
-            Destroy(dics);
+            int row = _kihu[i][0].Row;
+            int column = _kihu[i][0].Column;
+            _boardData[row, column].MyOnDiceState = OndiseState.None;
+            Destroy(_boardData[row, column].DiscOnMe);
             for (var j = 1; j < _kihu[i].Count; j++)
             {
-                string cellNum = _kihu[i][j];
-                int numline = int.Parse(cellNum[1].ToString());
-                int numrow = ((int)cellNum[0] - 96);
-                _boardData[numline, numrow] = _nowTurnDiscColor;
-                GameObject.Find($"{cellNum}").GetComponent<SquareController>().AboveDisc(_gameManager.NowBlackTurn);
+                int numline = _kihu[i][j].Row;
+                int numrow = _kihu[i][j].Column;
+                _boardData[numline, numrow].MyOnDiceState = _nowTurnDiscColor;
+                _boardData[numline, numrow].AboveDisc(_gameManager.NowBlackTurn);
             }
             foreach (SquareController cell in _discOn)
             {
@@ -281,7 +277,7 @@ public class DiscOnTheBoardData : MonoBehaviour
         _kihuText.text = "";
         for (var i = 0; i < _kihu.Count - _kihuReturnCount; i++)
         {
-            _kihuText.text += $"{_kihu[i][0]}";
+            _kihuText.text += $"{_kihu[i][0].Name}";
         }
     }
 
