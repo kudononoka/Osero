@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,6 +22,17 @@ public class DiscOnTheBoardData : MonoBehaviour
     int _noneCellCount = 60;
     [SerializeField] GameObject _DiscPrefab;
     bool _isUnRetrun = false;
+    int[,] _score =
+    {
+        {30, -12, 0, -1, -1, 0, -12, 30},
+        {-12, -15, -3, -3, -3, -3, -15, -12},
+        {0, -3, 0, -1, -1, 0, -3, 0},
+        {-1, -3, -1, -1, -1, -1, -3, -1},
+        {-1, -3, -1, -1, -1, -1, -3, -1},
+        {0, -3, 0, -1, -1, 0, -3, 0},
+        {-12, -15, -3, -3, -3, -3, -15, -12},
+        {30, -12, 0, -1, -1, 0, -12, 30},
+    };
     /// <summary>次のターンの準備にとりかかってもいいかどうか</summary>
     public bool isReverse { get { return _isReverse; }set { _isReverse = value; } }
     void Start()
@@ -69,11 +81,6 @@ public class DiscOnTheBoardData : MonoBehaviour
     /// <param name="squarePos">石を置いたマスのナンバー</param>
     public void DiscDataIn(Pos squarePos)
     {
-        if(_kihuReturnCount == 0)
-        {
-            _isUnRetrun = true;
-        }
-
         if(_kihuReturnCount > 0 && !_isUnRetrun)
         {
             _kihu.RemoveRange(_kihu.Count - _kihuReturnCount, _kihuReturnCount);
@@ -133,11 +140,13 @@ public class DiscOnTheBoardData : MonoBehaviour
         //なかったら終了
         if (_noneCellCount == 0)
         {
-            Debug.Log("終了");
+            _gameManager.IsWinnerBlack = WinnerJudge();
+            _gameManager.GameEnd();
         }
         //あったら
         else
         {
+            _discOn.Clear();
             //１マスずつ上に石があるかどうか調べる
             for (int i = 1; i < 9; i++)
             {
@@ -237,6 +246,7 @@ public class DiscOnTheBoardData : MonoBehaviour
             _gameManager.NowBlackTurn = !_gameManager.NowBlackTurn;
             _kihu.RemoveAt(_kihu.Count - 1);
             isReverse = true;
+            _isUnRetrun = false;
             _kihuReturnCount--;
         }
         
@@ -252,6 +262,7 @@ public class DiscOnTheBoardData : MonoBehaviour
             int column = _kihu[i][0].Column;
             _boardData[row, column].MyOnDiceState = OndiseState.None;
             Destroy(_boardData[row, column].DiscOnMe);
+            _boardData[row, column].layerChange(6);
             for (var j = 1; j < _kihu[i].Count; j++)
             {
                 int numline = _kihu[i][j].Row;
@@ -265,9 +276,10 @@ public class DiscOnTheBoardData : MonoBehaviour
                 cell.layerChange(2);
             }
             _discOn.Clear();
-            _gameManager.NowBlackTurn = !_gameManager.NowBlackTurn;
-            
-            isReverse = true;
+            //_gameManager.NowBlackTurn = !_gameManager.NowBlackTurn;
+
+            //isReverse = true;
+            _gameManager.ChangeTrun();
         }
         KihuText();
     }
@@ -279,6 +291,30 @@ public class DiscOnTheBoardData : MonoBehaviour
         {
             _kihuText.text += $"{_kihu[i][0].Name}";
         }
+    }
+
+    /// <summary>勝利判定</summary>
+    /// <returns>Trueの時黒の勝利</returns>
+    bool WinnerJudge()
+    {
+        int black = 0;
+        int white = 0;
+        for (int i = 1; i < _boardData.GetLength(0) - 1; i++)
+        {
+            for(int j = 1; j < _boardData.GetLength(1) - 1; j++)
+            {
+                if(_boardData[i, j].MyOnDiceState == OndiseState.Black)
+                {
+                    black++;
+                }
+                else
+                {
+                    white++;
+                }
+            }
+        }
+
+        return black > white ? true : false;
     }
 
 

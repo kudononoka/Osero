@@ -4,7 +4,7 @@ using static SquareController;
 public class SquareController : MonoBehaviour
 {
     /// <summary>自分のマスの上にいる石のDiscControllerコンポーネント</summary>
-    GameObject _discOnMe;
+    [SerializeField]GameObject _discOnMe;
     public GameObject DiscOnMe { get { return _discOnMe; } set { _discOnMe = value; } }
     /// <summary>自分のマスの上の石の状態</summary>
     OndiseState _ondiceState = OndiseState.None;
@@ -26,6 +26,7 @@ public class SquareController : MonoBehaviour
     public void MyPosSetUp(int row, int column)
     {
         _pos = new Pos(row, column, transform.position);
+        gameObject.name = $"{row}{column}";
     }
 
     /// <summary>当たり判定で自分のマスの上に石があるかどうかを確認</summary>
