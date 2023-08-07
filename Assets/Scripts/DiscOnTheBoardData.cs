@@ -22,17 +22,7 @@ public class DiscOnTheBoardData : MonoBehaviour
     int _noneCellCount = 60;
     [SerializeField] GameObject _DiscPrefab;
     bool _isUnRetrun = false;
-    int[,] _score =
-    {
-        {30, -12, 0, -1, -1, 0, -12, 30},
-        {-12, -15, -3, -3, -3, -3, -15, -12},
-        {0, -3, 0, -1, -1, 0, -3, 0},
-        {-1, -3, -1, -1, -1, -1, -3, -1},
-        {-1, -3, -1, -1, -1, -1, -3, -1},
-        {0, -3, 0, -1, -1, 0, -3, 0},
-        {-12, -15, -3, -3, -3, -3, -15, -12},
-        {30, -12, 0, -1, -1, 0, -12, 30},
-    };
+    
     /// <summary>次のターンの準備にとりかかってもいいかどうか</summary>
     public bool isReverse { get { return _isReverse; }set { _isReverse = value; } }
     void Start()
