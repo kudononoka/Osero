@@ -288,6 +288,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _kihuText: {fileID: 1968831401}
   _DiscPrefab: {fileID: 4732796912943034181, guid: 9acd04f8bbee2a94994ef4be485fea62, type: 3}
+  _aiControlle: {fileID: 1463122803}
 --- !u!4 &389797470
 Transform:
   m_ObjectHideFlags: 0
@@ -768,6 +769,7 @@ GameObject:
   - component: {fileID: 1463122801}
   - component: {fileID: 1463122800}
   - component: {fileID: 1463122802}
+  - component: {fileID: 1463122803}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -819,6 +821,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 958952a0ece80a74391417a8f051e0ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1463122803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1463122799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa9446698668df64a923334e71cca1e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _whiteScore: -2
+  _blackScore: -2
 --- !u!1 &1625898039
 GameObject:
   m_ObjectHideFlags: 0

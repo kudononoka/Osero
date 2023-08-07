@@ -22,7 +22,7 @@ public class DiscOnTheBoardData : MonoBehaviour
     int _noneCellCount = 60;
     [SerializeField] GameObject _DiscPrefab;
     bool _isUnRetrun = false;
-    
+    [SerializeField] AIControlle _aiControlle = null;
     /// <summary>次のターンの準備にとりかかってもいいかどうか</summary>
     public bool isReverse { get { return _isReverse; }set { _isReverse = value; } }
     void Start()
@@ -81,6 +81,7 @@ public class DiscOnTheBoardData : MonoBehaviour
         int column = squarePos.Column;
         //置いた場所をキーとしてバリューに現在表面になっている色を代入
         _boardData[row,column].MyOnDiceState = _nowTurnDiscColor;
+        _aiControlle.CellStateChange(squarePos);
         //挟んだ石の反転
         DiscReverse(row, column, _boardData[row, column].MyPos);
         //置くことが可能なマスのリセット
@@ -219,8 +220,9 @@ public class DiscOnTheBoardData : MonoBehaviour
         {
             //反転
             c.AboveDisc(_gameManager.NowBlackTurn);
+            _aiControlle.CellStateChange(c.MyPos);
         }
-
+        _aiControlle.ScoreSum();
         _kihu.Add(dir);
     }
     public void UnReturn()
