@@ -792,7 +792,9 @@ MonoBehaviour:
   _winner: {fileID: 459876045}
   _turnColor: {fileID: 591358910}
   _timerText: {fileID: 1741823337}
-  countTime: 15
+  _aiControlle: {fileID: 1463122803}
+  _oneCount: 0
+  countTime: 10
   _boardData: {fileID: 389797469}
 --- !u!4 &1463122801
 Transform:
@@ -833,8 +835,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa9446698668df64a923334e71cca1e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _DiscPrefab: {fileID: 4732796912943034181, guid: 9acd04f8bbee2a94994ef4be485fea62, type: 3}
   _whiteScore: -2
   _blackScore: -2
+  _boarddata: {fileID: 389797469}
 --- !u!1 &1625898039
 GameObject:
   m_ObjectHideFlags: 0

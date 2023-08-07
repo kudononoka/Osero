@@ -45,8 +45,7 @@ public class Player : MonoBehaviour
             disc.GetComponent<DiscController>().ChangeColor(discColor);
             //石を置いた場所をボード上のデータ管理しているシステムスクリプトに伝える
             _boarddata.DiscDataIn(pos);
-            //相手のターン
-            _gamemanager.ChangeTrun();
+            
         }
     }
 }

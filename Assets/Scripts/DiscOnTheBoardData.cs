@@ -25,6 +25,7 @@ public class DiscOnTheBoardData : MonoBehaviour
     [SerializeField] AIControlle _aiControlle = null;
     /// <summary>次のターンの準備にとりかかってもいいかどうか</summary>
     public bool isReverse { get { return _isReverse; }set { _isReverse = value; } }
+    public SquareController[,] BoardData => _boardData;
     void Start()
     {
         StartSetUp();
@@ -93,7 +94,7 @@ public class DiscOnTheBoardData : MonoBehaviour
         _discOn.Clear();
         //石を置けるマスを1マスなくす
         _noneCellCount--;
-
+        _gameManager.ChangeTrun();
         _kihuText.text += squarePos.Name;
     }
     
@@ -138,6 +139,7 @@ public class DiscOnTheBoardData : MonoBehaviour
         else
         {
             _discOn.Clear();
+            _aiControlle.ScoreAddedValuese.Clear();
             //１マスずつ上に石があるかどうか調べる
             for (int i = 1; i < 9; i++)
             {
@@ -159,6 +161,7 @@ public class DiscOnTheBoardData : MonoBehaviour
                     cell.layerChange(6);
                     //表示
                     cell.PlaceDiscSquares(true);
+                    _aiControlle.ScoreAddCell(cell.MyPos);
                 }
             }
             //なかったら

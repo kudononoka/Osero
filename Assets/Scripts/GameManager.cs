@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] Text _winner;
     [SerializeField] Text _turnColor;
     [SerializeField] Text _timerText;
+    [SerializeField] AIControlle _aiControlle;
+    public bool _oneCount = false;
     float _timer;
     [SerializeField]float countTime = 15;
     bool _nowBlackTurn = true;
@@ -37,6 +39,10 @@ public class GameManager : MonoBehaviour
                 _iswinnerBlack = !_nowBlackTurn;
                 GameEnd();
             }
+            else if(!_nowBlackTurn && _timer < 5)
+            {
+                _aiControlle.AddScoreValueMax();
+            }
             _timerText.text = _timer.ToString("F0");
         }
     }
@@ -47,6 +53,7 @@ public class GameManager : MonoBehaviour
         _nowBlackTurn = !_nowBlackTurn;
         _turnColor.text = _nowBlackTurn ? "黒" : "白";
         _timer = countTime;
+
         _boardData.isReverse = true;
     }
 
